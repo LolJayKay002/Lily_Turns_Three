@@ -71,53 +71,34 @@
 
   .sky {
     position: relative;
-    height: 300px;
-    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 26px 0 10px;
+    overflow: visible;
   }
 
-  .star {
-    position: absolute;
-    fill: #c9a84c;
-    opacity: 0.75;
-  }
-
-  .rainbow-arc {
-    position: absolute;
-    left: 50%;
-    top: 78px;
-    transform: translateX(-50%);
-    width: 460px;
-    max-width: 90%;
-  }
-
-  .cloud {
-    position: absolute;
-    fill: #ffffff;
-    opacity: 0.9;
-  }
-
-  .unicorn {
-    position: absolute;
-    left: 50%;
-    top: 62px;
-    transform: translateX(-50%);
-    width: 225px;
-    max-width: 62%;
+  .unicorn-img {
+    width: 240px;
+    max-width: 68%;
+    border-radius: 20px;
+    box-shadow: 0 16px 34px -12px rgba(74, 45, 92, 0.4);
     cursor: pointer;
     transition: transform 0.25s ease;
     touch-action: manipulation;
+    display: block;
   }
 
-  .unicorn.tapped {
+  .unicorn-img.tapped {
     animation: unicornWiggle 0.6s ease;
   }
 
   @keyframes unicornWiggle {
-    0% { transform: translateX(-50%) rotate(0deg) scale(1); }
-    25% { transform: translateX(-50%) rotate(-4deg) scale(1.05); }
-    50% { transform: translateX(-50%) rotate(3deg) scale(1.08); }
-    75% { transform: translateX(-50%) rotate(-2deg) scale(1.04); }
-    100% { transform: translateX(-50%) rotate(0deg) scale(1); }
+    0% { transform: rotate(0deg) scale(1); }
+    25% { transform: rotate(-4deg) scale(1.05); }
+    50% { transform: rotate(3deg) scale(1.08); }
+    75% { transform: rotate(-2deg) scale(1.04); }
+    100% { transform: rotate(0deg) scale(1); }
   }
 
   .tap-burst {
@@ -518,90 +499,7 @@
 
 <div class="card">
   <div class="sky">
-    <svg class="rainbow-arc" viewBox="0 0 460 130" fill="none">
-      <path d="M20 130 A210 210 0 0 1 440 130" stroke="#e3b7c4" stroke-width="6" stroke-linecap="round"/>
-      <path d="M42 130 A188 188 0 0 1 418 130" stroke="#f0d3ae" stroke-width="6" stroke-linecap="round"/>
-      <path d="M64 130 A166 166 0 0 1 396 130" stroke="#c9dfc0" stroke-width="6" stroke-linecap="round"/>
-      <path d="M86 130 A144 144 0 0 1 374 130" stroke="#bcd3e8" stroke-width="6" stroke-linecap="round"/>
-      <path d="M108 130 A122 122 0 0 1 352 130" stroke="#d3c2e0" stroke-width="6" stroke-linecap="round"/>
-    </svg>
-
-    <svg class="star" style="left:60px; top:36px; width:14px; height:14px;" viewBox="0 0 24 24"><path d="M12 0 L14.5 9.5 L24 12 L14.5 14.5 L12 24 L9.5 14.5 L0 12 L9.5 9.5 Z"/></svg>
-    <svg class="star" style="left:120px; top:90px; width:9px; height:9px;" viewBox="0 0 24 24"><path d="M12 0 L14.5 9.5 L24 12 L14.5 14.5 L12 24 L9.5 14.5 L0 12 L9.5 9.5 Z"/></svg>
-    <svg class="star" style="right:90px; top:44px; width:11px; height:11px;" viewBox="0 0 24 24"><path d="M12 0 L14.5 9.5 L24 12 L14.5 14.5 L12 24 L9.5 14.5 L0 12 L9.5 9.5 Z"/></svg>
-    <svg class="star" style="right:50px; top:100px; width:8px; height:8px;" viewBox="0 0 24 24"><path d="M12 0 L14.5 9.5 L24 12 L14.5 14.5 L12 24 L9.5 14.5 L0 12 L9.5 9.5 Z"/></svg>
-    <svg class="star" style="left:200px; top:24px; width:8px; height:8px;" viewBox="0 0 24 24"><path d="M12 0 L14.5 9.5 L24 12 L14.5 14.5 L12 24 L9.5 14.5 L0 12 L9.5 9.5 Z"/></svg>
-
-    <svg class="cloud" style="left:10px; top:150px; width:90px;" viewBox="0 0 100 44"><path d="M20 34 Q4 34 4 20 Q4 8 18 8 Q22 -2 36 2 Q46 -4 56 4 Q70 2 74 14 Q90 14 90 26 Q90 34 78 34 Z"/></svg>
-    <svg class="cloud" style="right:6px; top:170px; width:78px;" viewBox="0 0 100 44"><path d="M20 34 Q4 34 4 20 Q4 8 18 8 Q22 -2 36 2 Q46 -4 56 4 Q70 2 74 14 Q90 14 90 26 Q90 34 78 34 Z"/></svg>
-
-    <svg class="unicorn" id="unicorn" viewBox="0 0 300 300" fill="none" stroke="#4a2d5c" stroke-linecap="round" stroke-linejoin="round">
-
-      <!-- tail, full rainbow ribbon -->
-      <path d="M250,158 C273,166 285,184 271,204 C289,210 296,226 280,238" stroke="#e79bb0" stroke-width="10" fill="none"/>
-      <path d="M258,165 C280,175 290,195 278,215 C295,222 300,238 285,248" stroke="#f0c17e" stroke-width="10" fill="none"/>
-      <path d="M264,172 C284,182 292,200 282,220 C297,227 300,242 286,252" stroke="#9fd6bd" stroke-width="10" fill="none"/>
-      <path d="M270,180 C288,190 294,206 285,224 C298,230 300,244 288,254" stroke="#9cc3ea" stroke-width="10" fill="none"/>
-      <path d="M276,188 C292,196 296,210 288,226 C299,232 300,246 290,256" stroke="#c8aee3" stroke-width="10" fill="none"/>
-
-      <!-- body -->
-      <ellipse cx="195" cy="175" rx="75" ry="48" stroke-width="3" fill="#fbf7fc"/>
-
-      <!-- scattered stars on body -->
-      <g stroke="none">
-        <path transform="translate(163,152) scale(0.42)" fill="#e79bb0" opacity="0.9" d="M12 0 L14.5 9.5 L24 12 L14.5 14.5 L12 24 L9.5 14.5 L0 12 L9.5 9.5 Z"/>
-        <path transform="translate(205,148) scale(0.32)" fill="#f0c17e" opacity="0.85" d="M12 0 L14.5 9.5 L24 12 L14.5 14.5 L12 24 L9.5 14.5 L0 12 L9.5 9.5 Z"/>
-        <path transform="translate(184,196) scale(0.34)" fill="#7fc6ab" opacity="0.85" d="M12 0 L14.5 9.5 L24 12 L14.5 14.5 L12 24 L9.5 14.5 L0 12 L9.5 9.5 Z"/>
-        <path transform="translate(224,182) scale(0.3)" fill="#9cc3ea" opacity="0.85" d="M12 0 L14.5 9.5 L24 12 L14.5 14.5 L12 24 L9.5 14.5 L0 12 L9.5 9.5 Z"/>
-        <path transform="translate(210,168) scale(0.24)" fill="#c8aee3" opacity="0.8" d="M12 0 L14.5 9.5 L24 12 L14.5 14.5 L12 24 L9.5 14.5 L0 12 L9.5 9.5 Z"/>
-      </g>
-
-      <!-- legs -->
-      <rect x="138" y="205" width="22" height="63" rx="10" stroke-width="3" fill="#fbf7fc"/>
-      <rect x="168" y="208" width="22" height="60" rx="10" stroke-width="3" fill="#f3ecf5"/>
-      <rect x="228" y="205" width="22" height="63" rx="10" stroke-width="3" fill="#f3ecf5"/>
-      <rect x="252" y="208" width="22" height="60" rx="10" stroke-width="3" fill="#fbf7fc"/>
-
-      <!-- hooves -->
-      <rect x="138" y="260" width="22" height="10" rx="4" fill="#b391cf" stroke="none"/>
-      <rect x="168" y="260" width="22" height="10" rx="4" fill="#b391cf" stroke="none"/>
-      <rect x="228" y="260" width="22" height="10" rx="4" fill="#b391cf" stroke="none"/>
-      <rect x="252" y="260" width="22" height="10" rx="4" fill="#b391cf" stroke="none"/>
-
-      <!-- mane, full rainbow ribbon along neck and back -->
-      <path d="M106,63 C148,52 180,80 174,116 C200,117 226,137 214,167 C234,167 250,183 238,205" stroke="#e79bb0" stroke-width="11" fill="none"/>
-      <path d="M112,70 C155,62 185,90 178,125 C205,128 230,148 218,178 C240,178 255,195 244,215" stroke="#f0c17e" stroke-width="11" fill="none"/>
-      <path d="M118,82 C158,76 186,102 180,136 C206,140 228,158 217,186 C238,188 251,203 241,222" stroke="#9fd6bd" stroke-width="11" fill="none"/>
-      <path d="M122,89 C159,84 186,109 181,142 C206,146 227,164 216,190 C237,191 250,207 240,226" stroke="#9cc3ea" stroke-width="11" fill="none"/>
-      <path d="M124,94 C160,90 186,114 182,146 C206,150 226,168 216,193 C235,196 247,210 238,228" stroke="#c8aee3" stroke-width="11" fill="none"/>
-
-      <!-- head -->
-      <circle cx="110" cy="130" r="58" stroke-width="3" fill="#fbf7fc"/>
-
-      <!-- ears -->
-      <path d="M128,80 L140,44 L150,78 Z" stroke-width="3" fill="#fbf7fc"/>
-      <path d="M85,78 L78,42 L100,80 Z" stroke-width="3" fill="#fbf7fc"/>
-      <path d="M132,74 L138,54 L143,73 Z" stroke-width="2" fill="#e79bb0" stroke="#e79bb0"/>
-
-      <!-- horn -->
-      <path d="M100,66 L109,10 L119,66 Z" stroke-width="2" fill="#e8c467" stroke="#d9a84c"/>
-      <path d="M103,56 L114,52 M102,44 L115,40 M103,32 L114,29 M104,20 L112,18" stroke="#fff6df" stroke-width="2"/>
-
-      <!-- blush -->
-      <ellipse cx="92" cy="147" rx="13" ry="7.5" fill="#f5b9c9" opacity="0.6" stroke="none"/>
-
-      <!-- face -->
-      <circle cx="72" cy="126" r="17" stroke-width="3" fill="#4a2d5c"/>
-      <circle cx="66" cy="118" r="5.5" fill="#ffffff" stroke="none"/>
-      <circle cx="77" cy="132" r="2.2" fill="#ffffff" stroke="none" opacity="0.85"/>
-      <path d="M56,104 C61,97 68,94 76,96" stroke-width="3"/>
-      <path d="M50,101 L44,93" stroke-width="2.2"/>
-      <path d="M56,96 L52,87" stroke-width="2.2"/>
-      <path d="M63,93 L61,84" stroke-width="2.2"/>
-      <path d="M50,150 C58,160 70,161 80,153" stroke-width="3"/>
-      <circle cx="46" cy="140" r="2.4" fill="#4a2d5c" stroke="none"/>
-      <path d="M58,175 C58,182 64,186 70,184" stroke-width="2.4"/>
-    </svg>
+    <img class="unicorn-img" id="unicorn" src="unicorn.jpg" alt="A rainbow unicorn">
   </div>
 
   <div class="content">
