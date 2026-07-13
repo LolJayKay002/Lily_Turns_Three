@@ -72,10 +72,21 @@
   .sky {
     position: relative;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 8px;
     padding: 26px 0 10px;
     overflow: visible;
+  }
+
+  .unicorn-hint {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 13.5px;
+    color: #6b4a7a;
+    text-align: center;
+    opacity: 0.85;
   }
 
   .unicorn-img {
@@ -546,6 +557,92 @@
     line-height: 1.5;
   }
 
+  /* full-screen confetti/glitter explosion */
+  .confetti-layer {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 50;
+    overflow: hidden;
+  }
+
+  .confetti-piece,
+  .glitter-piece {
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    will-change: transform, opacity;
+    animation: confettiFall var(--dur, 1.8s) cubic-bezier(0.15, 0.65, 0.3, 1) var(--delay, 0s) forwards;
+  }
+
+  .glitter-piece {
+    font-size: var(--size, 16px);
+    line-height: 1;
+  }
+
+  @keyframes confettiFall {
+    0% { transform: translate(0, 0) rotate(0deg) scale(0.4); opacity: 1; }
+    12% { transform: translate(calc(var(--tx) * 0.28), var(--ty-mid)) rotate(calc(var(--rot) * 0.3)) scale(1); opacity: 1; }
+    75% { opacity: 1; }
+    100% { transform: translate(var(--tx), var(--ty-end)) rotate(var(--rot)) scale(0.85); opacity: 0; }
+  }
+
+  /* magical message card */
+  .magic-message-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.35s ease;
+  }
+
+  .magic-message-overlay.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .magic-message-card {
+    background: linear-gradient(180deg, #fdf9fb 0%, #f6ecf7 100%);
+    border: 1px solid rgba(201, 168, 76, 0.55);
+    border-radius: 16px;
+    box-shadow: 0 24px 50px -18px rgba(74, 45, 92, 0.5);
+    max-width: 300px;
+    padding: 28px 26px 24px;
+    text-align: center;
+    transform: scale(0.6) translateY(10px);
+    opacity: 0;
+  }
+
+  .magic-message-overlay.show .magic-message-card {
+    animation: magicPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+
+  @keyframes magicPop {
+    0% { transform: scale(0.5) translateY(14px); opacity: 0; }
+    60% { transform: scale(1.06) translateY(-4px); opacity: 1; }
+    100% { transform: scale(1) translateY(0); opacity: 1; }
+  }
+
+  .magic-message-icon {
+    font-size: 28px;
+    margin-bottom: 10px;
+    color: #c9a84c;
+  }
+
+  .magic-message-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 19px;
+    color: #4a2d5c;
+    line-height: 1.45;
+  }
+
   @media (max-width: 420px) {
     .content { padding: 8px 26px 36px; }
     .invite-line { font-size: 16.5px; }
@@ -555,10 +652,18 @@
 <body>
 
 <div class="sparkle-field" id="sparkleField"></div>
+<div class="confetti-layer" id="confettiLayer"></div>
+<div class="magic-message-overlay" id="magicOverlay">
+  <div class="magic-message-card">
+    <div class="magic-message-icon">✨</div>
+    <p class="magic-message-text" id="magicText"></p>
+  </div>
+</div>
 
 <div class="card">
   <div class="sky">
     <img class="unicorn-img" id="unicorn" src="unicorn.jpg" alt="A rainbow unicorn">
+    <p class="unicorn-hint">Tap the unicorn for a magical message! ✨</p>
   </div>
 
   <div class="content">
@@ -692,14 +797,137 @@
     setInterval(tick, 1000);
   })();
 
-  // tap-the-unicorn
+  // tap-the-unicorn: dramatic full-screen confetti burst + rotating kindness message
   (function unicornTap() {
     const unicorn = document.getElementById('unicorn');
     const sky = unicorn.closest('.sky');
-    unicorn.addEventListener('click', (e) => {
+    const confettiLayer = document.getElementById('confettiLayer');
+    const magicOverlay = document.getElementById('magicOverlay');
+    const magicText = document.getElementById('magicText');
+
+    const messages = [
+      "You are loved more than all the stars in the sky.",
+      "Being three looks absolutely magical on you.",
+      "Your giggles make the whole world brighter.",
+      "Every day with you feels like a fairytale.",
+      "You are a little bundle of sparkle and sunshine.",
+      "The world is so much sweeter with you in it.",
+      "May your third year be filled with wonder and giggles.",
+      "You make ordinary moments feel enchanted.",
+      "Kindness looks a lot like you, Lily-Rae.",
+      "You are someone's favorite person in the whole world.",
+      "Wishing you a birthday as wonderful as you are.",
+      "Little hands, big heart, endless magic.",
+      "You turn every day into an adventure.",
+      "Sparkle on, sweet girl — the world needs your light.",
+      "You are proof that magic is real.",
+      "Three cheers for the sweetest three-year-old around!",
+      "Your smile is the best kind of magic trick.",
+      "May your dreams be as big and bright as unicorns.",
+      "You are a gift wrapped in giggles and glitter.",
+      "Here's to a year of magical, unicorn-sized adventures."
+    ];
+
+    function shuffled(arr) {
+      const a = arr.slice();
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    let messageOrder = shuffled(messages);
+    let messageIndex = 0;
+    let hideTimer = null;
+
+    function nextMessage() {
+      if (messageIndex >= messageOrder.length) {
+        messageOrder = shuffled(messages);
+        messageIndex = 0;
+      }
+      const msg = messageOrder[messageIndex];
+      messageIndex++;
+      return msg;
+    }
+
+    function showMessage() {
+      magicText.textContent = nextMessage();
+      magicOverlay.classList.add('show');
+      if (hideTimer) clearTimeout(hideTimer);
+      hideTimer = setTimeout(() => magicOverlay.classList.remove('show'), 4200);
+    }
+
+    magicOverlay.addEventListener('click', () => {
+      if (hideTimer) clearTimeout(hideTimer);
+      magicOverlay.classList.remove('show');
+    });
+
+    const confettiColors = ['#7b1c2e', '#c9a84c', '#e79bb0', '#9fd6bd', '#9cc3ea', '#c8aee3', '#f0c17e', '#4a2d5c'];
+    const glitterGlyphs = ['✦', '✧', '⋆', '★', '✨'];
+
+    function launchConfetti() {
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      const frag = document.createDocumentFragment();
+      const pieces = [];
+
+      // confetti rectangles/dots, raining across the whole screen
+      for (let i = 0; i < 90; i++) {
+        const piece = document.createElement('span');
+        piece.className = 'confetti-piece';
+        const originX = Math.random() * vw;
+        const isCircle = Math.random() < 0.4;
+        const size = 6 + Math.random() * 8;
+        piece.style.left = originX + 'px';
+        piece.style.top = (-20 - Math.random() * 60) + 'px';
+        piece.style.width = size + 'px';
+        piece.style.height = (isCircle ? size : size * 2.2) + 'px';
+        piece.style.borderRadius = isCircle ? '50%' : '2px';
+        piece.style.background = confettiColors[Math.floor(Math.random() * confettiColors.length)];
+        piece.style.setProperty('--tx', (Math.random() * 260 - 130) + 'px');
+        piece.style.setProperty('--ty-mid', (60 + Math.random() * 80) + 'px');
+        piece.style.setProperty('--ty-end', (vh * 0.7 + Math.random() * vh * 0.5) + 'px');
+        piece.style.setProperty('--rot', (Math.random() * 720 - 360) + 'deg');
+        piece.style.setProperty('--dur', (1.6 + Math.random() * 1.2) + 's');
+        piece.style.setProperty('--delay', (Math.random() * 0.5) + 's');
+        frag.appendChild(piece);
+        pieces.push(piece);
+      }
+
+      // glinting glitter glyphs bursting outward from the unicorn
+      const rect = unicorn.getBoundingClientRect();
+      const originX = rect.left + rect.width / 2;
+      const originY = rect.top + rect.height / 2;
+      for (let i = 0; i < 26; i++) {
+        const glint = document.createElement('span');
+        glint.className = 'glitter-piece';
+        glint.textContent = glitterGlyphs[Math.floor(Math.random() * glitterGlyphs.length)];
+        const angle = Math.random() * Math.PI * 2;
+        const dist = 120 + Math.random() * (vw * 0.5);
+        glint.style.left = originX + 'px';
+        glint.style.top = originY + 'px';
+        glint.style.color = confettiColors[Math.floor(Math.random() * confettiColors.length)];
+        glint.style.setProperty('--size', (14 + Math.random() * 14) + 'px');
+        glint.style.setProperty('--tx', Math.cos(angle) * dist + 'px');
+        glint.style.setProperty('--ty-mid', (Math.sin(angle) * dist * 0.6 - 40) + 'px');
+        glint.style.setProperty('--ty-end', (Math.sin(angle) * dist + vh * 0.3) + 'px');
+        glint.style.setProperty('--rot', (Math.random() * 540 - 270) + 'deg');
+        glint.style.setProperty('--dur', (1.4 + Math.random() * 1) + 's');
+        glint.style.setProperty('--delay', (Math.random() * 0.25) + 's');
+        frag.appendChild(glint);
+        pieces.push(glint);
+      }
+
+      confettiLayer.appendChild(frag);
+      setTimeout(() => pieces.forEach((p) => p.remove()), 3200);
+    }
+
+    unicorn.addEventListener('click', () => {
       unicorn.classList.remove('tapped');
       void unicorn.offsetWidth;
       unicorn.classList.add('tapped');
+
       const rect = unicorn.getBoundingClientRect();
       const skyRect = sky.getBoundingClientRect();
       const originX = rect.left + rect.width / 2 - skyRect.left;
@@ -718,6 +946,9 @@
         sky.appendChild(burst);
         setTimeout(() => burst.remove(), 850);
       }
+
+      launchConfetti();
+      showMessage();
     });
   })();
 
