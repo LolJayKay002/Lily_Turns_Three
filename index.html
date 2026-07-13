@@ -148,13 +148,70 @@
     margin-bottom: 4px;
   }
 
+  .three-wrap {
+    position: relative;
+    display: inline-block;
+    margin: 2px auto 22px;
+  }
+
   .three {
     font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(40px, 10vw, 54px);
+    font-size: clamp(110px, 32vw, 190px);
+    font-weight: 700;
+    line-height: 0.85;
+    margin: 0;
     color: #c9a84c;
-    font-weight: 600;
-    line-height: 1;
-    margin-bottom: 18px;
+    filter: drop-shadow(0 8px 18px rgba(74, 45, 92, 0.35));
+    animation: threeIn 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) both,
+               threePulse 2.6s ease-in-out infinite 0.9s;
+  }
+
+  @supports (background-clip: text) or (-webkit-background-clip: text) {
+    .three {
+      background: linear-gradient(90deg, #e79bb0, #f0c17e, #9fd6bd, #9cc3ea, #c8aee3, #e79bb0);
+      background-size: 300% 100%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      animation: threeIn 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) both,
+                 rainbowShift 5s linear infinite 0.9s,
+                 threePulse 2.6s ease-in-out infinite 0.9s;
+    }
+  }
+
+  @keyframes threeIn {
+    0% { transform: scale(0.2) rotate(-25deg); opacity: 0; }
+    55% { transform: scale(1.18) rotate(9deg); opacity: 1; }
+    75% { transform: scale(0.94) rotate(-4deg); }
+    100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  }
+
+  @keyframes rainbowShift {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 300% 50%; }
+  }
+
+  @keyframes threePulse {
+    0%, 100% { transform: scale(1); filter: drop-shadow(0 8px 18px rgba(74, 45, 92, 0.35)); }
+    50% { transform: scale(1.035); filter: drop-shadow(0 10px 24px rgba(74, 45, 92, 0.45)); }
+  }
+
+  .three-sparkle {
+    position: absolute;
+    font-size: 22px;
+    opacity: 0;
+    animation: sparklePop 2.4s ease-in-out infinite;
+  }
+
+  .three-sparkle.s1 { top: 4%; left: -6%; color: #e79bb0; font-size: 28px; animation-delay: 0.3s; }
+  .three-sparkle.s2 { top: -4%; right: 4%; color: #9fd6bd; font-size: 20px; animation-delay: 1s; }
+  .three-sparkle.s3 { bottom: 14%; left: -2%; color: #9cc3ea; font-size: 22px; animation-delay: 1.6s; }
+  .three-sparkle.s4 { top: 42%; right: -8%; color: #c8aee3; font-size: 26px; animation-delay: 0.6s; }
+  .three-sparkle.s5 { bottom: -2%; right: 22%; color: #f0c17e; font-size: 18px; animation-delay: 1.2s; }
+
+  @keyframes sparklePop {
+    0%, 100% { opacity: 0; transform: scale(0.4) rotate(0deg); }
+    50% { opacity: 1; transform: scale(1.25) rotate(20deg); }
   }
 
   .divider {
@@ -506,7 +563,14 @@
     <div class="eyebrow">You're invited to celebrate</div>
     <div class="name">Lily-Rae</div>
     <div class="turns">is turning</div>
-    <div class="three">3</div>
+    <div class="three-wrap">
+      <div class="three">3</div>
+      <span class="three-sparkle s1">✦</span>
+      <span class="three-sparkle s2">✧</span>
+      <span class="three-sparkle s3">⋆</span>
+      <span class="three-sparkle s4">✦</span>
+      <span class="three-sparkle s5">★</span>
+    </div>
 
     <div class="divider"></div>
 
