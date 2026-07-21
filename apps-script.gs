@@ -7,7 +7,7 @@ function doPost(e) {
     sheet = SpreadsheetApp.getActiveSpreadsheet().insertSheet('RSVPs');
   }
   if (sheet.getLastRow() === 0) {
-    sheet.appendRow(['Timestamp', 'Name', 'Attending', 'Guests', 'Family Attending', 'Dietary needs / message']);
+    sheet.appendRow(['Timestamp', 'Name', 'Attending', 'Guests', 'Family Attending']);
   }
 
   var data = e.parameter;
@@ -16,8 +16,7 @@ function doPost(e) {
     data.name || '',
     data.attending || '',
     data.guests || '',
-    data.familyNames || '',
-    data.notes || ''
+    data.familyNames || ''
   ]);
 
   return ContentService
