@@ -4,7 +4,7 @@ A single self-contained page (`index.html`) with:
 - Mobile-first responsive layout
 - Ambient sparkle animation and a live countdown to 29 August
 - Tap-the-unicorn interaction
-- An RSVP form (name, attending yes/no, guest count, dietary needs/message) that submits straight into a Google Sheet
+- An RSVP form (name, attending yes/no, names of everyone attending) that submits straight into a Google Sheet
 
 Two things need to be connected before it's fully live: the Google Sheet, and hosting. Both are one-time setups.
 
@@ -29,7 +29,7 @@ Two things need to be connected before it's fully live: the Google Sheet, and ho
    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycb.../exec";
    ```
 
-Each RSVP submitted on the page will now append a row to the sheet: timestamp, name, attending, guest count, dietary needs/message.
+Each RSVP submitted on the page will now append a row to the sheet: timestamp, name, attending, guest count, family attending (names of everyone in the party).
 
 **Note:** because Google Apps Script doesn't return CORS headers, the page submits with `fetch(..., {mode: 'no-cors'})`. This means the browser can't read the response back, so the page always shows the "thank you" confirmation optimistically after sending. Check the Sheet directly to confirm rows are arriving — if you want delivery confirmation in the UI itself, that requires a small backend proxy instead of Apps Script directly.
 
