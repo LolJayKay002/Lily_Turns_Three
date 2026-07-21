@@ -469,34 +469,61 @@
     border-color: transparent;
   }
 
-  .guest-stepper {
+  .guest-list-wrap {
     display: none;
-    align-items: center;
-    justify-content: center;
-    gap: 18px;
   }
 
-  .guest-stepper.show { display: flex; }
+  .guest-list-wrap.show { display: block; }
 
-  .stepper-btn {
-    width: 34px;
-    height: 34px;
+  .guest-name-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .guest-name-row input[type="text"] {
+    flex: 1;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    color: #2f2338;
+    background: rgba(255, 255, 255, 0.65);
+    border: 1px solid rgba(201, 168, 76, 0.45);
+    border-radius: 8px;
+    padding: 10px 12px;
+    outline: none;
+  }
+
+  .guest-name-row input[type="text"]:focus {
+    border-color: #7b1c2e;
+    background: rgba(255, 255, 255, 0.9);
+  }
+
+  .remove-guest-btn {
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
     border-radius: 50%;
     border: 1px solid rgba(201, 168, 76, 0.55);
     background: rgba(255, 255, 255, 0.6);
-    font-size: 18px;
-    color: #4a2d5c;
+    font-size: 15px;
+    color: #7b1c2e;
     cursor: pointer;
     line-height: 1;
   }
 
-  .stepper-count {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 22px;
+  .add-guest-btn {
+    display: inline-flex;
+    align-items: center;
+    font-family: 'Montserrat', sans-serif;
     font-weight: 600;
-    color: #4a2d5c;
-    min-width: 24px;
-    text-align: center;
+    font-size: 13px;
+    color: #7b1c2e;
+    background: none;
+    border: 1px dashed rgba(201, 168, 76, 0.6);
+    border-radius: 999px;
+    padding: 9px 16px;
+    cursor: pointer;
   }
 
   .submit-btn {
@@ -724,13 +751,10 @@
           </div>
         </div>
 
-        <div class="field">
-          <label class="field-label">Number attending (incl. you)</label>
-          <div class="guest-stepper" id="guestStepper">
-            <button type="button" class="stepper-btn" id="stepDown">−</button>
-            <div class="stepper-count" id="stepCount">1</div>
-            <button type="button" class="stepper-btn" id="stepUp">+</button>
-          </div>
+        <div class="field guest-list-wrap" id="guestListWrap">
+          <label class="field-label">Who's coming with you?</label>
+          <div id="guestNameList"></div>
+          <button type="button" class="add-guest-btn" id="addGuestBtn">+ Add a family member</button>
         </div>
 
         <div class="field">
@@ -958,46 +982,59 @@
     const form = document.getElementById('rsvpForm');
     const btnYes = document.getElementById('btnYes');
     const btnNo = document.getElementById('btnNo');
-    const stepper = document.getElementById('guestStepper');
-    const stepCount = document.getElementById('stepCount');
-    const stepUp = document.getElementById('stepUp');
-    const stepDown = document.getElementById('stepDown');
+    const guestListWrap = document.getElementById('guestListWrap');
+    const guestNameList = document.getElementById('guestNameList');
+    const addGuestBtn = document.getElementById('addGuestBtn');
     const submitBtn = document.getElementById('submitBtn');
     const response = document.getElementById('rsvpResponse');
     const responseIcon = document.getElementById('responseIcon');
     const responseTitle = document.getElementById('responseTitle');
     const responseSub = document.getElementById('responseSub');
+    const MAX_GUESTS = 12;
 
     let attending = null;
-    let guests = 1;
 
     cta.addEventListener('click', () => {
       form.classList.add('open');
       cta.style.display = 'none';
     });
 
+    function addGuestRow() {
+      if (guestNameList.children.length >= MAX_GUESTS) return;
+      const row = document.createElement('div');
+      row.className = 'guest-name-row';
+
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.placeholder = 'e.g. Cath Kumm';
+      input.autocomplete = 'off';
+
+      const removeBtn = document.createElement('button');
+      removeBtn.type = 'button';
+      removeBtn.className = 'remove-guest-btn';
+      removeBtn.textContent = '×';
+      removeBtn.addEventListener('click', () => row.remove());
+
+      row.appendChild(input);
+      row.appendChild(removeBtn);
+      guestNameList.appendChild(row);
+    }
+
+    addGuestBtn.addEventListener('click', addGuestRow);
+
     btnYes.addEventListener('click', () => {
       attending = 'Yes';
       btnYes.classList.add('active-yes');
       btnNo.classList.remove('active-no');
-      stepper.classList.add('show');
+      guestListWrap.classList.add('show');
+      if (guestNameList.children.length === 0) addGuestRow();
     });
 
     btnNo.addEventListener('click', () => {
       attending = 'No';
       btnNo.classList.add('active-no');
       btnYes.classList.remove('active-yes');
-      stepper.classList.remove('show');
-    });
-
-    stepUp.addEventListener('click', () => {
-      guests = Math.min(guests + 1, 10);
-      stepCount.textContent = guests;
-    });
-
-    stepDown.addEventListener('click', () => {
-      guests = Math.max(guests - 1, 1);
-      stepCount.textContent = guests;
+      guestListWrap.classList.remove('show');
     });
 
     form.addEventListener('submit', function (e) {
@@ -1015,13 +1052,19 @@
         return;
       }
 
+      const familyNames = Array.from(guestNameList.querySelectorAll('input'))
+        .map((input) => input.value.trim())
+        .filter(Boolean);
+      const guests = attending === 'Yes' ? 1 + familyNames.length : 0;
+
       submitBtn.disabled = true;
       submitBtn.textContent = 'Sending…';
 
       const payload = new URLSearchParams({
         name: name,
         attending: attending,
-        guests: attending === 'Yes' ? String(guests) : '0',
+        guests: String(guests),
+        familyNames: attending === 'Yes' ? [name].concat(familyNames).join(', ') : '',
         notes: notes
       });
 
